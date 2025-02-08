@@ -17,7 +17,7 @@ class OthelloSquare:
         else:
             self.piece = 0
     
-    def get_piece_color(self) -> int:
+    def get_piece_color(self):
         return self.piece
     
     def is_empty(self) -> bool:
