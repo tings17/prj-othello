@@ -13,10 +13,9 @@ class HumanPlayer(Player):
         #self.board.print_board()
         if self.board.valid_move(row, col, self.player_color, True):
             self.board.get_square_at(row, col).add_piece(self.player_color)
-            #self.board.print_board()
-            referee.turn_over()
+            #referee.turn_over()
         else:
-            raise Exception("Invalid")
+            raise Exception("Invalid Move")
                 #print("Invalid move")
                 #row, col = self.get_move()
     

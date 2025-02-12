@@ -4,9 +4,8 @@ class Board:
     '''the constructor for the board class'''
     def __init__(self):
         self.board = [[OthelloSquare() for col in range(8)] for row in range(8)]
+        #self.set_test_scenario()
         self.set_up_board()
-        #self.print_board()
-
     
     def set_up_board(self):
         for row in range(8):
@@ -77,7 +76,6 @@ class Board:
         a piece on a specific square is valid or not
         while this method checks just in general all 64 squares in the board
         """
-        #valid_count = 0
         for row in range(8):
             for col in range(8):
                 if self.valid_move(row, col, player_color, False):
@@ -103,7 +101,7 @@ class Board:
         for row in range(8):
             for col in range(8):
                 if self.valid_move(row, col, player_color, False):
-                    print(f"Valid move at: ({row}, {col})")
+                    #print(str(row) + str(col) + f"Valid move at: ({row}, {col})")
                     self.board[row][col].change_tile()
     
     def clear_highlights(self):
@@ -111,12 +109,25 @@ class Board:
             for col in range(8):
                 if self.board[row][col].get_piece_color() == "X":
                     self.board[row][col].change_tile()
-        
-    def print_board(self):
-        for row in self.board:
-            row_repr = []
-            for square in row:
-                piece = square.get_piece_color()
-                # Represent empty squares by "."
-                row_repr.append(str(piece) if piece is not None else ".")
-            print(" ".join(row_repr))
+
+    def set_test_scenario(self):
+    # Clear the board first
+    
+    # Manually place pieces for the scenario where White has no moves
+        test_layout = [
+        ["W", "W", "W", "W", ".", "W", "W", "W"],
+        [".", "W", "W", "W", "W", "W", "W", "W"],
+        ["W", "W", "W", "W", "W", "W", "W", "W"],
+        ["W", "W", "W", "W", "W", "W", "W", "W"],
+        ["W", "W", "W", "W", "W", "W", "W", "W"],
+        ["W", "W", "W", "W", "W", ".", "W", "W"],
+        ["W", "W", ".", "W", "W", "W", "W", "W"],
+        ["W", "W", "W", ".", "W", "B", "B", "W"]]
+
+    # Convert to your internal representation
+        for row in range(8):
+            for col in range(8):
+                if test_layout[row][col] == "B":
+                    self.board[row][col].add_piece(0)  # 0 for Black
+                elif test_layout[row][col] == "W":
+                    self.board[row][col].add_piece(1)  # 1 for White  # Empty square

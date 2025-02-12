@@ -14,35 +14,31 @@ class GameUI():
         self.referee = referee
         self.tile_size = 80 # 640 // 8
         pygame.init()
-        self.screen = pygame.display.set_mode((self.tile_size * 8, self.tile_size * 8))
+        self.screen = pygame.display.set_mode((self.tile_size * 11, self.tile_size * 8))
         pygame.display.set_caption("OTHELLO")
 
     def draw_board(self):#, board: Board):
         self.screen.fill((34, 139, 34))
+        side_bar = pygame.Rect(self.tile_size * 8, 0, self.tile_size * 3, self.tile_size * 8)
+        pygame.draw.rect(self.screen, (110, 98, 98), side_bar)
         for row in range(8):
             for col in range(8):
                 x  = col * self.tile_size
                 y = row * self.tile_size
-                rect = pygame.Rect(x, y, self.tile_size, self.tile_size)
-                pygame.draw.rect(self.screen, (0, 0 ,0), rect ,1)
+                tile = pygame.Rect(x, y, self.tile_size, self.tile_size)
+                pygame.draw.rect(self.screen, (0, 0 ,0), tile ,1)
 
-                """
-                pygame.draw.rect(self.screen, (0,128,0), (x, y, self.tile_size, self.tile_size))
-                pygame.draw.rect(self.screen, (0, 0, 0), (x, y, self.tile_size, self.tile_size), 1)
-                """
                 board_tile = self.board.get_square_at(row, col)
 
                 # highlight moves
                 if board_tile.get_piece_color() == "X":
-                    pygame.draw.rect(self.screen, (128, 128, 128), rect)
+                    pygame.draw.rect(self.screen, (128, 128, 128), tile)
 
                 # draw pieces
                 if not board_tile.is_empty():
                     piece_color = (0,0,0) if board_tile.get_piece_color() == 0 else (255, 255, 255)
-                    pygame.draw.circle(self.screen, piece_color, rect.center, self.tile_size // 2 - 3)
-
-                #pygame.display.flip()
-                
+                    pygame.draw.circle(self.screen, piece_color, tile.center, self.tile_size // 2 - 3)
+        pygame.display.update()
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -54,21 +50,34 @@ class GameUI():
                 click_row = y // self.tile_size
                 click_col = x // self.tile_size
                 try:
+                    #making a move for the current player
                     self.referee.curr_player.make_move(self.referee, click_row, click_col)
+                    self.board.clear_highlights()
+                    self.draw_board()
                 except Exception:
+                    print("in except")
                     font = pygame.font.Font(None, 36)
                     text_surface = font.render("Invalid move", True, (255 ,0 ,0))
-                    self.screen.blit(text_surface,(self.screen .get_width()/2-text_surface .get_width()/2 , self.screen .get_height()-text_surface .get_height()-20))
+                    self.screen.blit(text_surface, (self.tile_size * 8.5, self.tile_size * 4))
                     pygame.display.flip()
-                    #self.referee.curr_player.make_move(self.referee, click_row, click_col)
+                else:
+                    self.referee.switch_turns()
+                    game_over = self.referee.game_over()
+                    if game_over:
+                        font = pygame.font.Font(None, 36)
+                        text_surface = font.render("GAME OVER \n " + self.referee.game_winner(), True, (255 ,0 ,0))
+                        self.screen.blit(text_surface, (self.tile_size * 8.5, self.tile_size * 4))
+                        pygame.display.flip()
+                    else:
+                        self.board.highlight_moves(self.referee.curr_player.get_player_color())
+                        self.draw_board()
+                        self.handle_events()
 
     def game_loop(self):
-        #board = Board()
         clock = pygame.time.Clock()
+        #initializing the board
+        self.board.highlight_moves(self.referee.curr_player.get_player_color())
+        self.draw_board()
         while True:
             self.handle_events()
-            self.draw_board()
-            self.board.clear_highlights()  # If available; otherwise implement logic to reset "X" states
-            self.board.highlight_moves(self.referee.curr_player.get_player_color())
-            pygame.display.update()
             clock.tick(60)
