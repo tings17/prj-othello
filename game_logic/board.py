@@ -1,4 +1,5 @@
 from game_logic.othello_square import OthelloSquare
+import copy
 
 class Board:
     '''the constructor for the board class'''
@@ -6,6 +7,13 @@ class Board:
         self.board = [[OthelloSquare() for col in range(8)] for row in range(8)]
         #self.set_test_scenario()
         self.set_up_board()
+
+    def copy_board(self):
+        test_board = Board()
+        for row in range(8):
+            for col in range(8):
+                test_board.board[row][col] = copy.deepcopy(self.board[row][col])
+        return test_board
     
     def set_up_board(self):
         for row in range(8):
@@ -109,25 +117,34 @@ class Board:
             for col in range(8):
                 if self.board[row][col].get_piece_color() == "X":
                     self.board[row][col].change_tile()
-
-    def set_test_scenario(self):
-    # Clear the board first
     
-    # Manually place pieces for the scenario where White has no moves
-        test_layout = [
-        ["W", "W", "W", "W", ".", "W", "W", "W"],
-        [".", "W", "W", "W", "W", "W", "W", "W"],
-        ["W", "W", "W", "W", "W", "W", "W", "W"],
-        ["W", "W", "W", "W", "W", "W", "W", "W"],
-        ["W", "W", "W", "W", "W", "W", "W", "W"],
-        ["W", "W", "W", "W", "W", ".", "W", "W"],
-        ["W", "W", ".", "W", "W", "W", "W", "W"],
-        ["W", "W", "W", ".", "W", "B", "B", "W"]]
-
-    # Convert to your internal representation
+    def evaluate_board(self, player_color):
+        board_weights = [
+    [200, -70, 30, 25, 25, 30, -70, 200],
+    [-70, -100, -10, -10, -10, -10, -100, -70],
+    [30, -10, 2, 2, 2, 2, -10, 30],
+    [25, -10, 2, 2, 2, 2, -10, 25],
+    [25, -10, 2, 2, 2, 2, -10, 25],
+    [30, -10, 2, 2, 2, 2, -10, 30],
+    [-70, -100, -10, -10, -10, -10, -100, -70],
+    [200, -70, 30, 25, 25, 30, -70, 200]
+]
+        curr_weights = 0
+        opp_weights = 0
         for row in range(8):
             for col in range(8):
-                if test_layout[row][col] == "B":
-                    self.board[row][col].add_piece(0)  # 0 for Black
-                elif test_layout[row][col] == "W":
-                    self.board[row][col].add_piece(1)  # 1 for White  # Empty square
+                if not self.get_square_at(row, col).is_empty():
+                    if self.get_square_at(row, col).get_piece_color() == player_color:
+                        curr_weights += board_weights[row][col]
+                    elif self.get_square_at(row, col).get_piece_color() != player_color:
+                        opp_weights += board_weights[row][col]
+       
+        return curr_weights - opp_weights;
+    
+    def get_all_moves(self, player_color):
+        all_moves = []
+        for row in range(8):
+            for col in range(8):
+                if self.valid_move(row, col, player_color, False):
+                    all_moves.append([row, col, self.evaluate_board(player_color)])
+        return all_moves

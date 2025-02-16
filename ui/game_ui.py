@@ -5,6 +5,7 @@ import pygame
 
 # Add the root directory of your project to the sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from game_logic.computer_player import ComputerPlayer
 from game_logic.board import Board
 from game_logic.referee import Referee
 
@@ -51,11 +52,10 @@ class GameUI():
                 click_col = x // self.tile_size
                 try:
                     #making a move for the current player
-                    self.referee.curr_player.make_move(self.referee, click_row, click_col)
+                    self.referee.curr_player.make_move(click_row, click_col)
                     self.board.clear_highlights()
                     self.draw_board()
                 except Exception:
-                    print("in except")
                     font = pygame.font.Font(None, 36)
                     text_surface = font.render("Invalid move", True, (255 ,0 ,0))
                     self.screen.blit(text_surface, (self.tile_size * 8.5, self.tile_size * 4))
@@ -71,7 +71,7 @@ class GameUI():
                     else:
                         self.board.highlight_moves(self.referee.curr_player.get_player_color())
                         self.draw_board()
-                        self.handle_events()
+                        #self.handle_events()
 
     def game_loop(self):
         clock = pygame.time.Clock()
@@ -79,5 +79,26 @@ class GameUI():
         self.board.highlight_moves(self.referee.curr_player.get_player_color())
         self.draw_board()
         while True:
-            self.handle_events()
+            if isinstance(self.referee.curr_player, ComputerPlayer):
+            # Let the computer make its move automatically.
+                pygame.time.wait(500)  # Pause a bit so you can see the move.
+                self.referee.curr_player.make_move()
+                self.board.clear_highlights()
+                self.draw_board()
+
+            # Check for game over.
+                if self.referee.game_over():
+                    font = pygame.font.Font(None, 36)
+                    text_surface = font.render("GAME OVER " + self.referee.game_winner(), True, (255, 0, 0))
+                    self.screen.blit(text_surface, (self.tile_size * 8.5, self.tile_size * 4))
+                    pygame.display.flip()
+                    # Optionally, break out of the loop.
+                    break
+
+                # Switch turn after computer move.
+                self.referee.switch_turns()
+                self.board.highlight_moves(self.referee.curr_player.get_player_color())
+                self.draw_board()
+            else:
+                self.handle_events()
             clock.tick(60)
