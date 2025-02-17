@@ -2,9 +2,10 @@ from game_logic.player import Player
 from game_logic.board import Board
 
 class ComputerPlayer(Player):
-    def __init__(self, player_color, board: Board):
+    def __init__(self, player_color, board: Board, depth: int):
         self.player_color = player_color
         self.board = board
+        self.depth = depth
 
     def minimax(self, board: Board, player_color: int, depth: int, maximizer: bool, alpha, beta):
         opp_color = 1 if player_color == 0 else 0
@@ -55,7 +56,7 @@ class ComputerPlayer(Player):
             return best_move
         
     def make_move(self):
-        move = self.minimax(self.board, self.player_color, 4, True, float('-inf'), float('inf'))
+        move = self.minimax(self.board, self.player_color, self.depth, True, float('-inf'), float('inf'))
         self.board.valid_move(move[0], move[1], self.player_color, True)
         self.board.get_square_at(move[0], move[1]).add_piece(self.player_color)
 

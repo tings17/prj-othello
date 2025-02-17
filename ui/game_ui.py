@@ -81,7 +81,7 @@ class GameUI():
         while True:
             if isinstance(self.referee.curr_player, ComputerPlayer):
             # Let the computer make its move automatically.
-                pygame.time.wait(500)  # Pause a bit so you can see the move.
+                pygame.time.wait(200)  # Pause a bit so you can see the move.
                 self.referee.curr_player.make_move()
                 self.board.clear_highlights()
                 self.draw_board()
@@ -92,8 +92,9 @@ class GameUI():
                     text_surface = font.render("GAME OVER " + self.referee.game_winner(), True, (255, 0, 0))
                     self.screen.blit(text_surface, (self.tile_size * 8.5, self.tile_size * 4))
                     pygame.display.flip()
+                    pygame.time.wait(2000)
                     # Optionally, break out of the loop.
-                    break
+                    #break
 
                 # Switch turn after computer move.
                 self.referee.switch_turns()
