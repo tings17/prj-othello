@@ -5,7 +5,6 @@ class Board:
     '''the constructor for the board class'''
     def __init__(self):
         self.board = [[OthelloSquare() for col in range(8)] for row in range(8)]
-        #self.set_test_scenario()
         self.set_up_board()
 
     def copy_board(self):
@@ -50,6 +49,8 @@ class Board:
         # if adjacent is same color and we saw the opponent already
         elif self.board[adj_row][adj_col].get_piece_color() == player_color and seen_opp == True:
             return True
+        
+        return False
         
     def valid_move(self, row: int, col: int, player_color: int, flip: bool) -> bool:
         """

@@ -8,7 +8,6 @@ class HumanPlayer(Player):
         self.board = board
     
     def make_move(self, row: int, col: int):
-        #print("White's turn" if self.player_color == 1 else "Black's turn")
         self.board.highlight_moves(self.player_color)
         if self.board.valid_move(row, col, self.player_color, True):
             self.board.get_square_at(row, col).add_piece(self.player_color)
